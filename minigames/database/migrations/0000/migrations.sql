@@ -1,0 +1,15 @@
+CREATE TABLE counting_channels ();
+CREATE TABLE _migrations ();
+ALTER TABLE counting_channels ADD COLUMN guild_id NUMERIC;
+ALTER TABLE counting_channels ADD COLUMN channel_id NUMERIC;
+ALTER TABLE counting_channels ADD COLUMN current_number BIGINT;
+ALTER TABLE counting_channels ADD COLUMN last_counter NUMERIC;
+ALTER TABLE counting_channels ADD COLUMN flags SMALLINT;
+ALTER TABLE _migrations ADD COLUMN id_ INTEGER;
+ALTER TABLE counting_channels ALTER COLUMN guild_id SET NOT NULL;
+ALTER TABLE counting_channels ALTER COLUMN channel_id SET NOT NULL;
+ALTER TABLE counting_channels ALTER COLUMN current_number SET NOT NULL;
+ALTER TABLE counting_channels ALTER COLUMN flags SET NOT NULL;
+ALTER TABLE _migrations ALTER COLUMN id_ SET NOT NULL;
+ALTER TABLE counting_channels ADD CONSTRAINT _counting_channels_channel_id_primary_key PRIMARY KEY ( channel_id );
+ALTER TABLE _migrations ADD CONSTRAINT __migrations_id__primary_key PRIMARY KEY ( id_ );
