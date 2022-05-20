@@ -63,6 +63,7 @@ async def on_message(event: hikari.GuildMessageCreateEvent) -> None:
         )
 
     if invalid_reason:
+        await event.message.add_reaction("❌")
         if CountingFlags.RESET_ON_INCORRECT in game.flags:
             await event.message.respond(
                 f"{invalid_reason} The game has been reset to 1.", reply=True
@@ -76,6 +77,7 @@ async def on_message(event: hikari.GuildMessageCreateEvent) -> None:
     game.current_number += 1
     game.last_counter = event.message.author.id
     await game.save()
+    await event.message.add_reaction("✅")
 
 
 # commands
