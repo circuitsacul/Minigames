@@ -5,16 +5,6 @@ from typing import Awaitable, Callable
 import crescent
 import hikari
 
-from minigames.config import CONFIG
-
-
-async def owner_only(ctx: crescent.Context) -> crescent.HookResult | None:
-    if ctx.user.id not in CONFIG.owners:
-        await ctx.respond("Only owners can use this command.", ephemeral=True)
-        return crescent.HookResult(True)
-
-    return None
-
 
 async def guild_only(ctx: crescent.Context) -> crescent.HookResult | None:
     if not ctx.guild_id:
