@@ -10,6 +10,7 @@ class Minigames(crescent.Bot):
 
         self.database = Database()
         self.plugins.load("minigames.plugins.counting")
+        self.plugins.load("minigames.plugins.misc")
 
     async def start(self, **kwargs) -> None:
         await self.database.connect(
