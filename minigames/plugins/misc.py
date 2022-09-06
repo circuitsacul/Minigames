@@ -6,7 +6,7 @@ import crescent
 
 from ._checks import guild_only
 
-plugin = crescent.Plugin("misc", [guild_only])
+plugin = crescent.Plugin(command_hooks=[guild_only])
 
 
 MAGIC_8BALL_RESPONSES = [
