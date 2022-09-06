@@ -34,7 +34,7 @@ def get_number(message: str) -> int | None:
     return None
 
 
-plugin = crescent.Plugin("counting")
+plugin = crescent.Plugin()
 
 
 # events
