@@ -8,6 +8,7 @@ from minigames.database.converters import DecimalC, NullDecimalC
 class CountingFlags(IntFlag):
     ALLOW_DOUBLE_COUNT = 1 << 0
     RESET_ON_INCORRECT = 1 << 1
+    REMOVE_NON_NUMBERS = 1 << 2
 
 
 class CountingGame(Model):

@@ -41,12 +41,18 @@ plugin = crescent.Plugin()
 @plugin.include
 @crescent.event
 async def on_message(event: hikari.GuildMessageCreateEvent) -> None:
+    if event.message.author.is_bot:
+        return
     if (game := await get_counting_channel(event.channel_id)) is None:
         return
-    if event.message.content is None:
-        return
-    number = get_number(event.message.content)
+
+    number = (
+        get_number(event.message.content) if event.message.content else None
+    )
     if number is None:
+        if CountingFlags.REMOVE_NON_NUMBERS in game.flags:
+            with suppress(hikari.ForbiddenError, hikari.NotFoundError):
+                await event.message.delete()
         return
 
     invalid_reason: str | None = None
@@ -142,6 +148,12 @@ class EditCountingGame:
         name="reset-on-incorrect",
         default=UNDEF.UNDEF,
     )
+    remove_non_numbers = crescent.option(
+        bool,
+        "Whether to remove messages that aren't numbers.",
+        name="remove-non-numbers",
+        default=UNDEF.UNDEF,
+    )
 
     async def callback(self, ctx: crescent.Context) -> None:
         assert ctx.guild_id
@@ -161,6 +173,7 @@ class EditCountingGame:
 
         update(self.allow_double_count, CountingFlags.ALLOW_DOUBLE_COUNT)
         update(self.reset_on_incorrect, CountingFlags.RESET_ON_INCORRECT)
+        update(self.remove_non_numbers, CountingFlags.REMOVE_NON_NUMBERS)
 
         if flags == game.flags:
             await ctx.respond("No changes were made.")
