@@ -85,11 +85,13 @@ async def on_message(event: hikari.GuildMessageCreateEvent) -> None:
 
 
 # commands
-group = crescent.Group("counting", "Counting-related commands.")
+counting_config = crescent.Group(
+    "counting-config", "Configure counting channels."
+)
 
 
 @plugin.include
-@group.child
+@counting_config.child
 @crescent.command(
     name="start",
     description="Create a new counting game.",
@@ -114,7 +116,7 @@ class NewCountingGame:
 
 
 @plugin.include
-@group.child
+@counting_config.child
 @crescent.command(
     name="stop",
     description="Delete a counting game.",
@@ -136,7 +138,7 @@ class StopCountingGame:
 
 
 @plugin.include
-@group.child
+@counting_config.child
 @crescent.command(
     name="edit",
     description="Edit a counting game.",
@@ -192,7 +194,7 @@ class EditCountingGame:
 
 
 @plugin.include
-@group.child
+@counting_config.child
 @crescent.command(
     name="set",
     description="Set the current number.",
@@ -219,24 +221,7 @@ class SetCurrentNumber:
 
 
 @plugin.include
-@group.child
-@crescent.command(
-    name="next", description="Show the next number.", dm_enabled=False
-)
-class CurrentNumber:
-    async def callback(self, ctx: crescent.Context) -> None:
-        assert ctx.guild_id
-        if (game := await get_counting_channel(ctx.channel_id)) is None:
-            await ctx.respond(
-                "There is no counting game running in this channel."
-            )
-            return
-
-        await ctx.respond(f"The next number is `{game.current_number}`.")
-
-
-@plugin.include
-@group.child
+@counting_config.child
 @crescent.command(
     name="list", description="List all counting channel.", dm_enabled=False
 )
@@ -261,7 +246,7 @@ class ListCountingChannel:
 
 
 @plugin.include
-@group.child
+@counting_config.child
 @crescent.command(
     name="view",
     description="View the settings for a counting channel.",
@@ -285,3 +270,23 @@ class ViewCountingChannel:
                 if flag.name is not None
             )
         )
+
+
+counting = crescent.Group("counting", "Counting-related commands.")
+
+
+@plugin.include
+@counting.child
+@crescent.command(
+    name="next", description="Show the next number.", dm_enabled=False
+)
+class CurrentNumber:
+    async def callback(self, ctx: crescent.Context) -> None:
+        assert ctx.guild_id
+        if (game := await get_counting_channel(ctx.channel_id)) is None:
+            await ctx.respond(
+                "There is no counting game running in this channel."
+            )
+            return
+
+        await ctx.respond(f"The next number is `{game.current_number}`.")
