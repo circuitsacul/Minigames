@@ -1,0 +1,94 @@
+{
+    "tables": [
+        {
+            "name": "counting_channels",
+            "fields": [
+                {
+                    "name": "guild_id",
+                    "type_": "NUMERIC",
+                    "not_null": true
+                },
+                {
+                    "name": "channel_id",
+                    "type_": "NUMERIC",
+                    "not_null": true
+                },
+                {
+                    "name": "current_number",
+                    "type_": "BIGINT",
+                    "not_null": true
+                },
+                {
+                    "name": "last_counter",
+                    "type_": "NUMERIC",
+                    "not_null": false
+                },
+                {
+                    "name": "flags",
+                    "type_": "SMALLINT",
+                    "not_null": true
+                }
+            ],
+            "fk_constraints": [],
+            "pk_constraint": {
+                "name": "_counting_channels_channel_id_primary_key",
+                "raw_sql": "CONSTRAINT _counting_channels_channel_id_primary_key PRIMARY KEY ( channel_id )"
+            },
+            "unique_constraints": [],
+            "check_constraints": [],
+            "exclude_constraints": []
+        },
+        {
+            "name": "counting_users",
+            "fields": [
+                {
+                    "name": "game_channel_id",
+                    "type_": "NUMERIC",
+                    "not_null": true
+                },
+                {
+                    "name": "user_id",
+                    "type_": "NUMERIC",
+                    "not_null": true
+                },
+                {
+                    "name": "total_numbers_counted",
+                    "type_": "INTEGER",
+                    "not_null": true
+                }
+            ],
+            "fk_constraints": [
+                {
+                    "name": "game_channel_id_fk",
+                    "raw_sql": "CONSTRAINT game_channel_id_fk FOREIGN KEY ( game_channel_id ) REFERENCES counting_channels ( channel_id ) MATCH SIMPLE ON DELETE CASCADE ON UPDATE CASCADE"
+                }
+            ],
+            "pk_constraint": {
+                "name": "_counting_users_game_channel_id_user_id_primary_key",
+                "raw_sql": "CONSTRAINT _counting_users_game_channel_id_user_id_primary_key PRIMARY KEY ( game_channel_id , user_id )"
+            },
+            "unique_constraints": [],
+            "check_constraints": [],
+            "exclude_constraints": []
+        },
+        {
+            "name": "_migrations",
+            "fields": [
+                {
+                    "name": "id_",
+                    "type_": "INTEGER",
+                    "not_null": true
+                }
+            ],
+            "fk_constraints": [],
+            "pk_constraint": {
+                "name": "__migrations_id__primary_key",
+                "raw_sql": "CONSTRAINT __migrations_id__primary_key PRIMARY KEY ( id_ )"
+            },
+            "unique_constraints": [],
+            "check_constraints": [],
+            "exclude_constraints": []
+        }
+    ],
+    "indexes": []
+}

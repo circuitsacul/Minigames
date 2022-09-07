@@ -1,6 +1,6 @@
 from enum import IntFlag
 
-from apgorm import IntEFConverter, Model, types
+from apgorm import ForeignKey, IntEFConverter, Model, types
 
 from minigames.database.converters import DecimalC, NullDecimalC
 
@@ -24,3 +24,14 @@ class CountingGame(Model):
     )
 
     primary_key = (channel_id,)
+
+
+class CountingUser(Model):
+    game_channel_id = types.Numeric().field().with_converter(DecimalC)
+    user_id = types.Numeric().field().with_converter(DecimalC)
+
+    total_numbers_counted = types.Int().field(default=0)
+
+    game_channel_id_fk = ForeignKey(game_channel_id, CountingGame.channel_id)
+
+    primary_key = (game_channel_id, user_id)

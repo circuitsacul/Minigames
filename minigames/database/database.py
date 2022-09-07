@@ -1,6 +1,6 @@
 import apgorm
 
-from .models.counting import CountingGame
+from .models.counting import CountingGame, CountingUser
 
 
 class Database(apgorm.Database):
@@ -16,3 +16,4 @@ class Database(apgorm.Database):
             await self.apply_migrations()
 
     counting_channels = CountingGame
+    counting_users = CountingUser

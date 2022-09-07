@@ -7,7 +7,11 @@ import cachetools
 import crescent
 import hikari
 
-from minigames.database.models.counting import CountingFlags, CountingGame
+from minigames.database.models.counting import (
+    CountingFlags,
+    CountingGame,
+    CountingUser,
+)
 from minigames.undefined import UNDEF
 
 COUNT_CHANNEL_CACHE: cachetools.LFUCache[
@@ -82,6 +86,18 @@ async def on_message(event: hikari.GuildMessageCreateEvent) -> None:
     game.last_counter = event.message.author.id
     await game.save()
     await event.message.add_reaction("✅")
+
+    try:
+        user = await CountingUser(
+            game_channel_id=game.channel_id, user_id=event.message.author.id
+        ).create()
+    except asyncpg.UniqueViolationError:
+        user = await CountingUser.fetch(
+            game_channel_id=game.channel_id, user_id=event.message.author.id
+        )
+
+    user.total_numbers_counted += 1
+    await user.save()
 
 
 # commands
@@ -290,3 +306,122 @@ class CurrentNumber:
             return
 
         await ctx.respond(f"The next number is `{game.current_number}`.")
+
+
+@plugin.include
+@counting.child
+@crescent.command(
+    name="user-stats", description="Show user statistics.", dm_enabled=False
+)
+class CountingUserInfo:
+    user = crescent.option(
+        hikari.User, "The user to show counting info for.", default=None
+    )
+
+    async def callback(self, ctx: crescent.Context) -> None:
+        assert ctx.guild_id
+        user = self.user or ctx.user
+
+        games = (
+            await CountingGame.fetch_query()
+            .where(guild_id=ctx.guild_id)
+            .fetchmany()
+        )
+        if len(games) == 0:
+            await ctx.respond(
+                "This server has no counting games.", ephemeral=True
+            )
+
+        stats: dict[int, int] = {}
+        for game in games:
+            counting_user = await CountingUser.exists(
+                game_channel_id=game.channel_id, user_id=user.id
+            )
+            total_counts = (
+                counting_user.total_numbers_counted if counting_user else 0
+            )
+            stats[game.channel_id] = total_counts
+
+        if len(stats) > 1:
+            pretty = (
+                f"Stats for <@{user.id}>:\n"
+                + "\n".join(
+                    f"<#{chid}>: {counts} number"
+                    + ("s" if counts != 1 else "")
+                    for chid, counts in stats.items()
+                )
+                + f"\nTotal: {sum(stats.values())}"
+            )
+        else:
+            counts = sum(stats.values())
+            pretty = f"<@{user.id}> has {counts} number" + (
+                "s" if counts != 1 else ""
+            )
+        await ctx.respond(pretty)
+
+
+@plugin.include
+@counting.child
+@crescent.command(
+    name="leaderboard",
+    description="Show the leaderboard for most counts.",
+    dm_enabled=False,
+)
+class CountingLeaderboard:
+    game = crescent.option(
+        hikari.TextableGuildChannel,
+        "The counting game to show stats for.",
+        default=None,
+    )
+
+    async def callback(self, ctx: crescent.Context) -> None:
+        assert ctx.guild_id
+
+        if self.game:
+            game = await CountingGame.exists(channel_id=self.game.id)
+            if not game:
+                await ctx.respond(
+                    f"<#{self.game.id}> is not a counting channel.",
+                    ephemeral=True,
+                )
+                return
+        else:
+            games = (
+                await CountingGame.fetch_query()
+                .where(guild_id=ctx.guild_id)
+                .fetchmany()
+            )
+            if len(games) == 0:
+                await ctx.respond(
+                    "This server doesn't have any counting games.",
+                    ephemeral=True,
+                )
+                return
+            elif len(games) > 1:
+                await ctx.respond(
+                    "Please specify a game to show the leaderboard for.",
+                    ephemeral=True,
+                )
+                return
+            else:
+                game = games[0]
+
+        top = (
+            await CountingUser.fetch_query()
+            .where(game_channel_id=game.channel_id)
+            .order_by(CountingUser.total_numbers_counted, True)
+            .fetchmany(limit=9)
+        )
+
+        if len(top) == 0:
+            await ctx.respond(
+                "There is no one on the leaderboard.", ephemeral=True
+            )
+        else:
+            lb: list[str] = []
+            for x, user in enumerate(top):
+                counts = user.total_numbers_counted
+                counts_str = f"{counts} number" + ("" if counts == 1 else "s")
+                lb.append(f"#{x+1}. <@{user.user_id}> with {counts_str}\n")
+
+            await ctx.respond("".join(lb))
