@@ -10,8 +10,6 @@ import hikari
 from minigames.database.models.counting import CountingFlags, CountingGame
 from minigames.undefined import UNDEF
 
-from ._checks import guild_only, has_guild_perms
-
 COUNT_CHANNEL_CACHE: cachetools.LFUCache[
     int, CountingGame | None
 ] = cachetools.LFUCache(maxsize=100)
@@ -87,15 +85,17 @@ async def on_message(event: hikari.GuildMessageCreateEvent) -> None:
 
 
 # commands
-group = crescent.Group(
-    "counting", "Counting-related commands.", hooks=[guild_only]
-)
+group = crescent.Group("counting", "Counting-related commands.")
 
 
 @plugin.include
 @group.child
-@crescent.hook(has_guild_perms(hikari.Permissions.MANAGE_MESSAGES))
-@crescent.command(name="start", description="Create a new counting game.")
+@crescent.command(
+    name="start",
+    description="Create a new counting game.",
+    default_member_permissions=hikari.Permissions.MANAGE_CHANNELS,
+    dm_enabled=False,
+)
 class NewCountingGame:
     async def callback(self, ctx: crescent.Context) -> None:
         assert ctx.guild_id
@@ -115,8 +115,12 @@ class NewCountingGame:
 
 @plugin.include
 @group.child
-@crescent.hook(has_guild_perms(hikari.Permissions.MANAGE_MESSAGES))
-@crescent.command(name="stop", description="Delete a counting game.")
+@crescent.command(
+    name="stop",
+    description="Delete a counting game.",
+    default_member_permissions=hikari.Permissions.MANAGE_CHANNELS,
+    dm_enabled=False,
+)
 class StopCountingGame:
     async def callback(self, ctx: crescent.Context) -> None:
         assert ctx.guild_id
@@ -133,8 +137,12 @@ class StopCountingGame:
 
 @plugin.include
 @group.child
-@crescent.hook(has_guild_perms(hikari.Permissions.MANAGE_MESSAGES))
-@crescent.command(name="edit", description="Edit a counting game.")
+@crescent.command(
+    name="edit",
+    description="Edit a counting game.",
+    default_member_permissions=hikari.Permissions.MANAGE_CHANNELS,
+    dm_enabled=False,
+)
 class EditCountingGame:
     allow_double_count = crescent.option(
         bool,
@@ -185,8 +193,12 @@ class EditCountingGame:
 
 @plugin.include
 @group.child
-@crescent.hook(has_guild_perms(hikari.Permissions.MANAGE_MESSAGES))
-@crescent.command(name="set", description="Set the current number.")
+@crescent.command(
+    name="set",
+    description="Set the current number.",
+    default_member_permissions=hikari.Permissions.MANAGE_CHANNELS,
+    dm_enabled=False,
+)
 class SetCurrentNumber:
     number = crescent.option(
         int, "The number to set the current number to.", min_value=0
@@ -208,7 +220,9 @@ class SetCurrentNumber:
 
 @plugin.include
 @group.child
-@crescent.command(name="next", description="Show the next number.")
+@crescent.command(
+    name="next", description="Show the next number.", dm_enabled=False
+)
 class CurrentNumber:
     async def callback(self, ctx: crescent.Context) -> None:
         assert ctx.guild_id
@@ -223,7 +237,9 @@ class CurrentNumber:
 
 @plugin.include
 @group.child
-@crescent.command(name="list", description="List all counting channel.")
+@crescent.command(
+    name="list", description="List all counting channel.", dm_enabled=False
+)
 class ListCountingChannel:
     async def callback(self, ctx: crescent.Context) -> None:
         assert ctx.guild_id
@@ -247,7 +263,9 @@ class ListCountingChannel:
 @plugin.include
 @group.child
 @crescent.command(
-    name="view", description="View the settings for a counting channel."
+    name="view",
+    description="View the settings for a counting channel.",
+    dm_enabled=False,
 )
 class ViewCountingChannel:
     async def callback(self, ctx: crescent.Context) -> None:

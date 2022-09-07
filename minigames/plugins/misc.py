@@ -4,10 +4,7 @@ import random
 
 import crescent
 
-from ._checks import guild_only
-
-plugin = crescent.Plugin(command_hooks=[guild_only])
-
+plugin = crescent.Plugin()
 
 MAGIC_8BALL_RESPONSES = [
     "It is certain.",
@@ -47,7 +44,11 @@ EMOJIFY_MAP = {
 
 
 @plugin.include
-@crescent.command(name="8ball", description="Ask the magic 8ball a question.")
+@crescent.command(
+    name="8ball",
+    description="Ask the magic 8ball a question.",
+    dm_enabled=False,
+)
 class Magic8Ball:
     question = crescent.option(str, "The question.")
 
@@ -60,7 +61,9 @@ class Magic8Ball:
 
 
 @plugin.include
-@crescent.command(name="emojify", description="Send text as emojis.")
+@crescent.command(
+    name="emojify", description="Send text as emojis.", dm_enabled=False
+)
 class Emojify:
     text = crescent.option(str, "The text to emojify.")
     hide = crescent.option(bool, "Whether to hide the result.", default=False)
