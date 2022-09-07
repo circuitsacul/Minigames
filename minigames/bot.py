@@ -9,8 +9,7 @@ class Minigames(crescent.Bot):
         super().__init__(CONFIG.discord_token)
 
         self.database = Database()
-        self.plugins.load("minigames.plugins.counting")
-        self.plugins.load("minigames.plugins.misc")
+        self.plugins.load_folder("minigames.plugins")
 
     async def start(self, **kwargs) -> None:
         await self.database.connect(
