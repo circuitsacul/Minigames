@@ -13,7 +13,7 @@ license = "MIT"
 python = "^3.8,<3.11"
 hikari = "^2.0.0.dev110"
 apgorm = "^1.0.0b11"
-hikari-crescent = "^0.3.0"
+hikari-crescent = "^0.3.5"
 cachetools = "^5.2.0"
 types-cachetools = "^5.2.1"
 
