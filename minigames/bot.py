@@ -1,3 +1,5 @@
+from typing import Any
+
 import crescent
 
 from .config import CONFIG
@@ -11,7 +13,7 @@ class Minigames(crescent.Bot):
         self.database = Database()
         self.plugins.load_folder("minigames.plugins")
 
-    async def start(self, **kwargs) -> None:
+    async def start(self, **kwargs: Any) -> None:
         await self.database.connect(
             host=CONFIG.database_host,
             user=CONFIG.database_user,
