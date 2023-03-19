@@ -1,6 +1,7 @@
 from typing import Any
 
 import crescent
+from hikari import Intents
 
 from .config import CONFIG
 from .database.database import Database
@@ -8,7 +9,10 @@ from .database.database import Database
 
 class Minigames(crescent.Bot):
     def __init__(self) -> None:
-        super().__init__(CONFIG.discord_token)
+        super().__init__(
+            intents=Intents.ALL_UNPRIVILEGED | Intents.MESSAGE_CONTENT,
+            token=CONFIG.discord_token,
+        )
 
         self.database = Database()
         self.plugins.load_folder("minigames.plugins")
