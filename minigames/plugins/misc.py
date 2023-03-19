@@ -44,11 +44,7 @@ EMOJIFY_MAP = {
 
 
 @plugin.include
-@crescent.command(
-    name="8ball",
-    description="Ask the magic 8ball a question.",
-    dm_enabled=False,
-)
+@crescent.command(name="8ball", description="Ask the magic 8ball a question.")
 class Magic8Ball:
     question = crescent.option(str, "The question.")
 
@@ -61,9 +57,7 @@ class Magic8Ball:
 
 
 @plugin.include
-@crescent.command(
-    name="emojify", description="Send text as emojis.", dm_enabled=False
-)
+@crescent.command(name="emojify", description="Send text as emojis.")
 class Emojify:
     text = crescent.option(str, "The text to emojify.")
     hide = crescent.option(bool, "Whether to hide the result.", default=False)

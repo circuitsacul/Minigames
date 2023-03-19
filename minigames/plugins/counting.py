@@ -102,18 +102,16 @@ async def on_message(event: hikari.GuildMessageCreateEvent) -> None:
 
 # commands
 counting_config = crescent.Group(
-    "counting-config", "Configure counting channels."
+    "counting-config",
+    "Configure counting channels.",
+    default_member_permissions=hikari.Permissions.MANAGE_CHANNELS,
+    dm_enabled=False,
 )
 
 
 @plugin.include
 @counting_config.child
-@crescent.command(
-    name="start",
-    description="Create a new counting game.",
-    default_member_permissions=hikari.Permissions.MANAGE_CHANNELS,
-    dm_enabled=False,
-)
+@crescent.command(name="start", description="Create a new counting game.")
 class NewCountingGame:
     async def callback(self, ctx: crescent.Context) -> None:
         assert ctx.guild_id
@@ -133,12 +131,7 @@ class NewCountingGame:
 
 @plugin.include
 @counting_config.child
-@crescent.command(
-    name="stop",
-    description="Delete a counting game.",
-    default_member_permissions=hikari.Permissions.MANAGE_CHANNELS,
-    dm_enabled=False,
-)
+@crescent.command(name="stop", description="Delete a counting game.")
 class StopCountingGame:
     async def callback(self, ctx: crescent.Context) -> None:
         assert ctx.guild_id
@@ -155,12 +148,7 @@ class StopCountingGame:
 
 @plugin.include
 @counting_config.child
-@crescent.command(
-    name="edit",
-    description="Edit a counting game.",
-    default_member_permissions=hikari.Permissions.MANAGE_CHANNELS,
-    dm_enabled=False,
-)
+@crescent.command(name="edit", description="Edit a counting game.")
 class EditCountingGame:
     allow_double_count = crescent.option(
         bool,
@@ -211,12 +199,7 @@ class EditCountingGame:
 
 @plugin.include
 @counting_config.child
-@crescent.command(
-    name="set",
-    description="Set the current number.",
-    default_member_permissions=hikari.Permissions.MANAGE_CHANNELS,
-    dm_enabled=False,
-)
+@crescent.command(name="set", description="Set the current number.")
 class SetCurrentNumber:
     number = crescent.option(
         int, "The number to set the current number to.", min_value=0
@@ -238,9 +221,7 @@ class SetCurrentNumber:
 
 @plugin.include
 @counting_config.child
-@crescent.command(
-    name="list", description="List all counting channel.", dm_enabled=False
-)
+@crescent.command(name="list", description="List all counting channel.")
 class ListCountingChannel:
     async def callback(self, ctx: crescent.Context) -> None:
         assert ctx.guild_id
@@ -264,9 +245,7 @@ class ListCountingChannel:
 @plugin.include
 @counting_config.child
 @crescent.command(
-    name="view",
-    description="View the settings for a counting channel.",
-    dm_enabled=False,
+    name="view", description="View the settings for a counting channel."
 )
 class ViewCountingChannel:
     async def callback(self, ctx: crescent.Context) -> None:
@@ -288,14 +267,14 @@ class ViewCountingChannel:
         )
 
 
-counting = crescent.Group("counting", "Counting-related commands.")
+counting = crescent.Group(
+    "counting", "Counting-related commands.", dm_enabled=False
+)
 
 
 @plugin.include
 @counting.child
-@crescent.command(
-    name="next", description="Show the next number.", dm_enabled=False
-)
+@crescent.command(name="next", description="Show the next number.")
 class CurrentNumber:
     async def callback(self, ctx: crescent.Context) -> None:
         assert ctx.guild_id
@@ -310,9 +289,7 @@ class CurrentNumber:
 
 @plugin.include
 @counting.child
-@crescent.command(
-    name="user-stats", description="Show user statistics.", dm_enabled=False
-)
+@crescent.command(name="user-stats", description="Show user statistics.")
 class CountingUserInfo:
     user = crescent.option(
         hikari.User, "The user to show counting info for.", default=None
@@ -363,9 +340,7 @@ class CountingUserInfo:
 @plugin.include
 @counting.child
 @crescent.command(
-    name="leaderboard",
-    description="Show the leaderboard for most counts.",
-    dm_enabled=False,
+    name="leaderboard", description="Show the leaderboard for most counts."
 )
 class CountingLeaderboard:
     game = crescent.option(
