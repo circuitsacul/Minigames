@@ -20,7 +20,7 @@ types-cachetools = "^5.2.1"
 [tool.poetry.dev-dependencies]
 black = "^22.8.0"
 mypy = "^0.991"
-nox = "^2022.8.7"
+nox = "^2023.4.22"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.221"
